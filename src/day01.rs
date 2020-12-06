@@ -42,3 +42,8 @@ pub fn aoc01() {
     }
 }
 
+#[test]
+fn test_hello() {
+    // aoc01();
+    assert_eq!(1, 1);
+}
