@@ -19,30 +19,25 @@ fn is_valid (lower: usize, upper: usize, single_char: String, validation_string:
 fn is_valid_2 (lower: usize, upper: usize, single_char: String, validation_string: String) -> bool {
     let mut lower_match : bool = false;
     let mut upper_match : bool = false;
-    for x in 0..validation_string.len() {
-        match validation_string[x..].find(single_char.as_str()) {
-            None => {
-                if x == lower - 1 {
-                    lower_match = false;
-                }
-                if x == upper - 1 {
-                    upper_match = false;
-                }
-            },
-            Some(y) => {
-                if x == lower - 1 && y == 0 {
-                    lower_match = true;
-                }
-                if x == upper - 1 && y == 0 {
-                    upper_match = true;
-                }
-            },
+
+    match validation_string[(lower-1)..].find(single_char.as_str()) {
+        None => lower_match = false,
+        Some(y) => {
+            if y == 0 {
+                lower_match = true;
+            }
         }
     }
-    if !(lower_match && !upper_match) {
-        println!("{} {} {} {}", lower, upper, single_char, validation_string);
+    match validation_string[(upper-1)..].find(single_char.as_str()) {
+        None => upper_match = false,
+        Some(y) => {
+            if y == 0 {
+                upper_match = true;
+            }
+        }
     }
-    lower_match && !upper_match
+
+    lower_match != upper_match
 }
 
 fn parse_line (line: String) -> Option<(usize, usize, String, String)> {
@@ -131,8 +126,7 @@ fn test_validation() {
 fn test_validation_part_2() {
     assert_eq!(is_valid_2(1, 3, String::from("a"), String::from("abcde")), true, "abcde valid");
     assert_eq!(is_valid_2(1, 3, String::from("b"), String::from("cdefg")), false, "cdefg invalid");
-    assert_eq!(is_valid_2(2, 9, String::from("c"), String::from("caccccccc")), false, "ccccccccc valid");
-    assert_eq!(is_valid_2(2, 9, String::from("c"), String::from("cccccccca")), true, "cccccccca valid");
+    assert_eq!(is_valid_2(2, 9, String::from("c"), String::from("ccccccccc")), false, "ccccccccc invalid");
 }
 
 #[test]
@@ -152,4 +146,6 @@ fn test_parser() {
 fn test_valid_passwords() {
     assert_eq!(445, day02a());
     assert!(250 != day02b());
+    assert!(255 != day02b());
+    assert_eq!(491, day02b());
 }
