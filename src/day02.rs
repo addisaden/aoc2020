@@ -1,4 +1,5 @@
-#[allow(dead_code)]
+use std::fs;
+
 fn is_valid (lower: usize, upper: usize, single_char: String, validation_string: String) -> bool {
     let mut found = 0;
     for x in 0..validation_string.len() {
@@ -15,7 +16,6 @@ fn is_valid (lower: usize, upper: usize, single_char: String, validation_string:
     found >= lower && found <= upper
 }
 
-#[allow(dead_code)]
 fn parse_line (line: String) -> Option<(usize, usize, String, String)> {
     let result: Vec<&str> = line.rsplitn(2, ":").collect();
     if result.len() != 2 {
@@ -43,6 +43,29 @@ fn parse_line (line: String) -> Option<(usize, usize, String, String)> {
     Some((a, b, single_char, result))
 }
 
+pub fn day02a() -> usize {
+    let filename = "inputs/02/input.txt";
+
+    let content = fs::read_to_string(filename).expect("");
+
+    let splittet : Vec<&str> = content.split("\n").collect();
+
+    let mut valid_passwords : usize = 0;
+
+    for a in splittet {
+        match parse_line(String::from(a)) {
+            None => print!(""),
+            Some((lower, upper, chr, stri)) => {
+                if is_valid(lower, upper, String::from(chr), String::from(stri)) {
+                    valid_passwords += 1;
+                }
+            }
+        }
+    }
+
+    valid_passwords
+}
+
 #[test]
 fn test_validation() {
     assert_eq!(is_valid(1, 3, String::from("a"), String::from("abcde")), true, "abcde valid");
@@ -62,4 +85,9 @@ fn test_parser() {
             assert_eq!(upper, 3, "Second parsed Value should be 3");
         },
     }
+}
+
+#[test]
+fn test_valid_passwords() {
+    assert_eq!(445, day02a());
 }
