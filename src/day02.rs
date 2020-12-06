@@ -1,10 +1,22 @@
 #[allow(dead_code)]
-fn is_valid (_lower: i32, _upper: i32, _single_char: String, _validation_string: String) -> bool {
-    false
+fn is_valid (lower: usize, upper: usize, single_char: String, validation_string: String) -> bool {
+    let mut found = 0;
+    for x in 0..validation_string.len() {
+        match validation_string[x..].find(single_char.as_str()) {
+            None => break,
+            Some(0) => found += 1,
+            Some(x) => {
+                if x > 0 {
+                    continue
+                }
+            }
+        }
+    }
+    found >= lower && found <= upper
 }
 
 #[allow(dead_code)]
-fn parse_line (line: String) -> Option<(i32, i32, String, String)> {
+fn parse_line (line: String) -> Option<(usize, usize, String, String)> {
     let result: Vec<&str> = line.rsplitn(2, ":").collect();
     if result.len() != 2 {
         return None
@@ -25,17 +37,18 @@ fn parse_line (line: String) -> Option<(i32, i32, String, String)> {
         return None
     }
     
-    let a: i32 = numbersplit[1].parse::<i32>().unwrap();
-    let b: i32 = numbersplit[0].parse::<i32>().unwrap();
+    let a: usize = numbersplit[1].parse::<usize>().unwrap();
+    let b: usize = numbersplit[0].parse::<usize>().unwrap();
 
     Some((a, b, single_char, result))
 }
 
 #[test]
 fn test_validation() {
-    assert_eq!(is_valid(1, 3, String::from("a"), String::from("abcde")), true);
-    assert_eq!(is_valid(1, 3, String::from("b"), String::from("cdefg")), false);
-    assert_eq!(is_valid(2, 9, String::from("c"), String::from("ccccccccc")), true);
+    assert_eq!(is_valid(1, 3, String::from("a"), String::from("abcde")), true, "abcde valid");
+    assert_eq!(is_valid(1, 3, String::from("b"), String::from("cdefg")), false, "cdefg invalid");
+    assert_eq!(is_valid(2, 9, String::from("c"), String::from("ccccccccc")), true, "ccccccccc valid");
+    assert_eq!(is_valid(2, 9, String::from("c"), String::from("cccccccccc")), false, "cccccccccc valid");
 }
 
 #[test]
